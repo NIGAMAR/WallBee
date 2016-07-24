@@ -8,22 +8,21 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
+
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
-public class Index extends AppCompatActivity implements IndexScreen{
+import java.util.ArrayList;
+
+
+public class Index extends AppCompatActivity implements IndexScreen {
 
     private Toolbar indexToolbar;
     private FloatingActionButton indexFab;
@@ -31,27 +30,32 @@ public class Index extends AppCompatActivity implements IndexScreen{
     private RecyclerView imagesRv;
     private StaggeredGridLayoutManager manager;
     private DatabaseReference reference;
+    private ImagesAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_index);
         initialize();
-        database=FirebaseDatabase.getInstance();
-        reference=database.getReference("images");
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference("images");
         reference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d("firebase","the child was aded ");
+                L.d("there are " + dataSnapshot.getChildrenCount() + " childrens");
+                Image singleImage = dataSnapshot.getValue(Image.class);
+                L.d("ImageName " + singleImage.getImageName() + " ImageUrl " + singleImage.getImageUrl());
+                adapter.addImage(singleImage);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Log.d("firebase","the child was changed ");
+                Log.d("firebase", "the child was changed ");
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Log.d("firebase","the child was removed ");
+                Log.d("firebase", "the child was removed ");
 
             }
 
@@ -65,7 +69,6 @@ public class Index extends AppCompatActivity implements IndexScreen{
 
             }
         });
-
 
     }
 
@@ -95,8 +98,9 @@ public class Index extends AppCompatActivity implements IndexScreen{
     public void initialize() {
         indexToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(indexToolbar);
-        imagesRv= (RecyclerView) findViewById(R.id.images_rv);
-        manager=new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        imagesRv = (RecyclerView) findViewById(R.id.images_rv);
+        adapter = new ImagesAdapter(this, new ArrayList<Image>());
+        manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         indexFab = (FloatingActionButton) findViewById(R.id.fab);
         indexFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,5 +110,6 @@ public class Index extends AppCompatActivity implements IndexScreen{
             }
         });
         imagesRv.setLayoutManager(manager);
+        imagesRv.setAdapter(adapter);
     }
 }
