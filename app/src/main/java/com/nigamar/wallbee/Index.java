@@ -101,14 +101,6 @@ public class Index extends AppCompatActivity implements IndexScreen {
         imagesRv = (RecyclerView) findViewById(R.id.images_rv);
         adapter = new ImagesAdapter(this, new ArrayList<Image>());
         manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        indexFab = (FloatingActionButton) findViewById(R.id.fab);
-        indexFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         imagesRv.setLayoutManager(manager);
         imagesRv.setAdapter(adapter);
     }
